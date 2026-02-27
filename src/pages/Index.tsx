@@ -97,7 +97,7 @@ const Index = () => {
       ) : orders.length === 0 ? (
         <p className="text-muted-foreground text-center mt-20">No orders found</p>
       ) : (
-        <div className={viewMode === "grid" ? "flex flex-wrap gap-5" : "flex flex-col gap-4"}>
+        <div className={viewMode === "grid" ? "grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4" : "flex flex-col gap-4"}>
           {orders.map((order) => (
             <OrderCard key={order.id} order={order} onConfirm={handleConfirm} />
           ))}
