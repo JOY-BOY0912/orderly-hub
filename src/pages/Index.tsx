@@ -45,12 +45,24 @@ const Index = () => {
   }, []);
 
   const handleConfirm = async (orderId: number) => {
-    const res = await fetch(`${API_BASE}/confirm-order`, {
+    if (!orderId) {
+      console.error("Order ID missing:", orderId);
+      return;
+    }
+
+    console.log("Confirm payload:", orderId);
+
+    await fetch(`${API_BASE}/confirm-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ order_id: orderId }),
     });
-    if (!res.ok) throw new Error("Failed to confirm");
+
+    setOrders(prev =>
+      prev.map(o =>
+        o.id === orderId ? { ...o, status: "CONFIRMED" } : o
+      )
+    );
   };
 
   return (
