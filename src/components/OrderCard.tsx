@@ -21,7 +21,7 @@ interface Order {
 
 interface OrderCardProps {
   order: Order;
-  onConfirm: (orderId: number) => Promise<void>;
+  onConfirm: (order: Order) => Promise<void>;
 }
 
 const OrderCard = ({ order, onConfirm }: OrderCardProps) => {
@@ -34,7 +34,7 @@ const OrderCard = ({ order, onConfirm }: OrderCardProps) => {
   const handleConfirm = async () => {
     setConfirming(true);
     try {
-      await onConfirm(order.id);
+      await onConfirm(order);
       setStatus("CONFIRMED");
     } catch (e) {
       console.error("Failed to confirm order", e);
