@@ -44,25 +44,33 @@ const Index = () => {
     fetchOrders();
   }, []);
 
-  const handleConfirm = async (orderId: number) => {
-    if (!orderId) {
-      console.error("Order ID missing:", orderId);
+  const handleConfirmOrder = async (order: Order) => {
+    if (!order || !order.id) {
+      console.error("Order ID missing:", order);
       return;
     }
 
-    console.log("Confirm payload:", orderId);
+    try {
+      console.log("Sending order_id:", order.id);
 
-    await fetch(`${API_BASE}/confirm-order`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ order_id: orderId }),
-    });
+      const res = await fetch(`${API_BASE}/confirm-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order_id: Number(order.id) }),
+      });
 
-    setOrders(prev =>
-      prev.map(o =>
-        o.id === orderId ? { ...o, status: "CONFIRMED" } : o
-      )
-    );
+      if (!res.ok) throw new Error("Webhook failed");
+
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === order.id ? { ...o, status: "CONFIRMED" } : o
+        )
+      );
+
+      console.log("Order confirmed successfully");
+    } catch (err) {
+      console.error("Confirm order error:", err);
+    }
   };
 
   return (
@@ -111,7 +119,7 @@ const Index = () => {
       ) : (
         <div className={viewMode === "grid" ? "grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4" : "flex flex-col gap-4"}>
           {orders.map((order) => (
-            <OrderCard key={order.id} order={order} onConfirm={handleConfirm} />
+            <OrderCard key={order.id} order={order} onConfirm={handleConfirmOrder} />
           ))}
         </div>
       )}
